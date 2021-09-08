@@ -62,6 +62,7 @@ public class SearchBox implements IsElement<HTMLElement> {
         suggestBox.setFocusOnClose(false);
         
         HTMLElement resetIcon = Icons.ALL.close().setId("SearchResetIcon").element();
+        resetIcon.style.cursor = "pointer";
         resetIcon.addEventListener("click", new EventListener() {
             @Override
             public void handleEvent(Event evt) {
