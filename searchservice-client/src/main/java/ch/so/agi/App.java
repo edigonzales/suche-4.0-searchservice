@@ -60,6 +60,7 @@ public class App implements EntryPoint {
         body().add(mapElement);
         map = MapPresets.getColorMap(MAP_DIV_ID);
 
+        body().add(new SearchBox(map));
         
         console.log("fubar");
 	}
