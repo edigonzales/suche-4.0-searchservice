@@ -66,10 +66,8 @@ public class SearchBox implements IsElement<HTMLElement> {
             @Override
             public void handleEvent(Event evt) {
                 HTMLInputElement el =(HTMLInputElement) suggestBox.getInputElement().element();
-//                el.value = "";
-//                suggestBox.unfocus();
-//                ol.source.Vector vectorSource = map.getHighlightLayer().getSource();
-//                vectorSource.clear(false); 
+                el.value = "";
+                suggestBox.unfocus();
             }
         });
         
