@@ -3,13 +3,16 @@
 ## Database
 
 ```
-docker run ...
+mkdir -m 0777 ~/pgdata_search
+docker run -p 54322:5432 -v ~/pgdata:/var/lib/postgresql/data:delegated -e POSTGRES_DB=pub -e POSTGRES_PASSWORD=mysecretpassword edigonzales/postgis:13-3.1
 ```
 
 ```
-git clone ...
-gretl ...
+git clone https://github.com/edigonzales/suche-4.0.git
+gradle createTables importData
 ```
+Use Gradle < 7.
+
 
 
 ## Develop

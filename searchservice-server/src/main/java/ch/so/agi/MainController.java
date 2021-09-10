@@ -19,4 +19,9 @@ public class MainController {
     public ResponseEntity<?> getSettings() {
         return ResponseEntity.ok().body(settings);
     }
+    
+    @GetMapping("/ping")
+    public ResponseEntity<?> ping() {
+        return ResponseEntity.ok().body("suche-4.0");
+    }
 }
