@@ -53,7 +53,6 @@ public class SearchBox implements IsElement<HTMLElement> {
             }
         };
 
-
         suggestBox = SuggestBox.create("Suche: Adressen, Orte und Karten", dynamicStore);
         suggestBox.setId("SuggestBox");
         suggestBox.addLeftAddOn(Icons.ALL.search());

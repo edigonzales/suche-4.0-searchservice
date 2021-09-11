@@ -4,7 +4,7 @@
 
 ```
 mkdir -m 0777 ~/pgdata_search
-docker run -p 54322:5432 -v ~/pgdata:/var/lib/postgresql/data:delegated -e POSTGRES_DB=pub -e POSTGRES_PASSWORD=mysecretpassword edigonzales/postgis:13-3.1
+docker run -p 54322:5432 -v ~/pgdata_search:/var/lib/postgresql/data:delegated -e POSTGRES_DB=pub -e POSTGRES_PASSWORD=mysecretpassword edigonzales/postgis:13-3.1
 ```
 
 ```

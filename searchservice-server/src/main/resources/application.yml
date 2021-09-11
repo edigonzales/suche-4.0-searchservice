@@ -17,18 +17,27 @@ logging:
     org.springframework: INFO 
 
 spring:
-    resources:
-        static-locations: classpath:/launcherDir/,classpath:/public/
-    devtools:
-        restart:
-            additional-exclude: launcherDir/**
+  resources:
+    static-locations: classpath:/launcherDir/,classpath:/public/
+  devtools:
+    restart:
+      additional-exclude: launcherDir/**
+  daßßtasource:
+    url: ${DBURL:jdbc:postgresql://localhost:54322/pub}
+    username: ${DBUSR:gretl}
+    password: ${DBPWD:gretl}
+    driver-class-name: org.postgresql.Driver
+    hikari.maximumPoolSize: ${MAXIMUM_POOL_SIZE:10}
+    hikari.connectionTimeout: 60000
 
 # spring:
 #     profiles:
 #         active: test 
 
+
+
 # ========================
 # APPLICATION
 # ========================
 app:
-    myVar: ${VAR:defaultValue}
+  myVar: ${VAR:defaultValue}

@@ -1,11 +1,16 @@
 package ch.so.agi;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,6 +19,9 @@ public class MainController {
 
     @Autowired
     Settings settings;
+    
+    @Autowired
+    SearchService searchService;
     
     @GetMapping("/settings")
     public ResponseEntity<?> getSettings() {
@@ -24,4 +32,19 @@ public class MainController {
     public ResponseEntity<?> ping() {
         return ResponseEntity.ok().body("suche-4.0");
     }
+    
+    @GetMapping("/search")
+    public List<SearchResult> search(@RequestParam(value="searchtext", required=true) String queryString) {
+        log.info(queryString);
+        
+        if (queryString == null) {
+
+        }
+
+        searchService.search(queryString);
+        
+        
+        return null;
+    }
+    
 }
