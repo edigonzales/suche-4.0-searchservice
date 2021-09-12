@@ -4,7 +4,13 @@
 
 ```
 mkdir -m 0777 ~/pgdata_search
-docker run -p 54322:5432 -v ~/pgdata_search:/var/lib/postgresql/data:delegated -e POSTGRES_DB=pub -e POSTGRES_PASSWORD=mysecretpassword edigonzales/postgis:13-3.1
+docker run -p 54322:5432 -v ~/pgdata_search:/var/lib/postgresql/data:delegated -e POSTGRES_DB=pub -e POSTGRES_PASSWORD=mysecretpassword postgis/postgis:13-3.1
+```
+Mein auf Apple Silicon erzeugtes `edigonzales/postgis:13-3.1` Image scheint nicht mehr zu funktioneren. Keine Ahnung warum, es ist nur ein Layer zusätzlich. Nun denn: 
+
+```
+    CREATE USER gretl LOGIN ENCRYPTED PASSWORD 'gretl';
+    GRANT ALL PRIVILEGES ON DATABASE pub TO gretl;
 ```
 
 ```

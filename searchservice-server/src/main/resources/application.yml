@@ -22,7 +22,7 @@ spring:
   devtools:
     restart:
       additional-exclude: launcherDir/**
-  daßßtasource:
+  datasource:
     url: ${DBURL:jdbc:postgresql://localhost:54322/pub}
     username: ${DBUSR:gretl}
     password: ${DBPWD:gretl}
