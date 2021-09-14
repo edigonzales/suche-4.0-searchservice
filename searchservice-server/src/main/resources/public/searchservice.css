@@ -51,6 +51,11 @@ body, div {
     max-height: calc(100% - 30px);
 }
 
+#suggestions .dropdown-menu {
+    background-color: wheat;
+    max-height: calc(100vh - 12em) !important;
+}
+
 #logoDiv {
     padding: 10px;
 }

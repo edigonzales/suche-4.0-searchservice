@@ -233,8 +233,10 @@ public class SearchBox implements IsElement<HTMLElement> {
         suggestBox.getInputElement().setAttribute("autocomplete", "off");
         suggestBox.getInputElement().setAttribute("spellcheck", "false");
         DropDownMenu suggestionsMenu = suggestBox.getSuggestionsMenu();
+        suggestionsMenu.setId("suggestions");
         suggestionsMenu.setPosition(new DropDownPositionDown());
         suggestionsMenu.setSearchable(false);
+       // suggestionsMenu.element().style.maxHeight = CSSProperties.MaxHeightUnionType.of("500px");
         
         suggestBox.addSelectionHandler(new SelectionHandler() {
             @Override
