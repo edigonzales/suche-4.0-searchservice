@@ -52,7 +52,7 @@ body, div {
 }
 
 #suggestions .dropdown-menu {
-    background-color: wheat;
+    /*background-color: wheat;*/
     max-height: calc(100vh - 12em) !important;
 }
 

@@ -34,14 +34,14 @@ public class MainController {
     }
     
     @GetMapping("/search")
-    public List<String> search(@RequestParam(value="searchtext", required=true) String queryString) {
+    public List<FeatureResult> search(@RequestParam(value="searchtext", required=true) String queryString) {
         log.info(queryString);
         
         if (queryString == null) {
 
         }
 
-        List<String> result = searchService.search(queryString);
+        List<FeatureResult> result = searchService.search(queryString);
         
         
         return result;

@@ -3,6 +3,8 @@ package ch.so.agi;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +24,28 @@ public class SearchService {
     @Autowired
     NamedParameterJdbcTemplate jdbcParamTemplate; 
 
-    public List<String> search(String queryString) {
+    public List<FeatureResult> search(String queryString) {
         log.info(queryString);
         
-        String stmt = "SELECT t_id, display, facet FROM suche.solr_views LIMIT 10";
+        String stmt = "SELECT t_id, display, facet, bbox FROM suche.solr_views LIMIT 10";
         
-        List<String> foo = jdbcTemplate.query(stmt, new RowMapper<String>() {
+        List<FeatureResult> foo = jdbcTemplate.query(stmt, new RowMapper<FeatureResult>() {
             @Override
-            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public FeatureResult mapRow(ResultSet rs, int rowNum) throws SQLException {
                 String display = rs.getString("display");
-                return display;
+                String facet = rs.getString("facet");
+                String bbox = rs.getString("bbox");                
+                List<Integer> coords = Arrays.stream(bbox.substring(1, bbox.length()-1).split(","))
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+                
+                FeatureResult featureResult = new FeatureResult();
+                featureResult.setDisplay(display);
+                featureResult.setDataproductId(facet);
+                featureResult.setBbox(coords);
+                
+                
+                return featureResult;
             }
             
         });
