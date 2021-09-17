@@ -17,7 +17,7 @@ Mein auf Apple Silicon erzeugtes `edigonzales/postgis:13-3.1` Image scheint nich
 git clone https://github.com/edigonzales/suche-4.0.git
 gradle createTables importData
 ```
-Use Gradle < 7.
+Use Gradle < 7.0 (wegen GRETL).
 
 
 
