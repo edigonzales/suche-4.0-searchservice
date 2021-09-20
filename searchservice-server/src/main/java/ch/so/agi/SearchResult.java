@@ -2,20 +2,24 @@ package ch.so.agi;
 
 import java.util.List;
 
-public class SearchResult {
-    List<FeatureResult> features;
-    List<DataproductResult> dataproducts;
+public abstract class SearchResult {
+    private String dataproductId;
     
-    public List<FeatureResult> getFeatures() {
-        return features;
+    private String display;
+
+    public String getDataproductId() {
+        return dataproductId;
     }
-    public void setFeatures(List<FeatureResult> features) {
-        this.features = features;
+
+    public void setDataproductId(String dataproductId) {
+        this.dataproductId = dataproductId;
     }
-    public List<DataproductResult> getDataproducts() {
-        return dataproducts;
+
+    public String getDisplay() {
+        return display;
     }
-    public void setDataproducts(List<DataproductResult> dataproducts) {
-        this.dataproducts = dataproducts;
+
+    public void setDisplay(String display) {
+        this.display = display;
     }
 }

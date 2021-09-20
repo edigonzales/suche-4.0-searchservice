@@ -2,26 +2,26 @@ package ch.so.agi;
 
 import java.util.List;
 
-public class DataproductResult {
-    private String dataproductId;
-    private String display;
+public class DataproductResult extends SearchResult {
+//    private String dataproductId;
+//    private String display;
     private boolean destInfo;
     private String stacktype;
     private String type;
     private List<DataproductResult> sublayers;
     
-    public String getDataproductId() {
-        return dataproductId;
-    }
-    public void setDataproductId(String dataproductId) {
-        this.dataproductId = dataproductId;
-    }
-    public String getDisplay() {
-        return display;
-    }
-    public void setDisplay(String display) {
-        this.display = display;
-    }
+//    public String getDataproductId() {
+//        return dataproductId;
+//    }
+//    public void setDataproductId(String dataproductId) {
+//        this.dataproductId = dataproductId;
+//    }
+//    public String getDisplay() {
+//        return display;
+//    }
+//    public void setDisplay(String display) {
+//        this.display = display;
+//    }
     public boolean isDestInfo() {
         return destInfo;
     }
