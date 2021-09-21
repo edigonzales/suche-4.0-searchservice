@@ -1,41 +1,41 @@
 package ch.so.agi;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FeatureResult {
-    String featureId; // cast to bigint. Momentan wird id nicht verwendet, nur notwendig für dataservice.
+public class FeatureResult extends SearchResult {
+    private BigInteger featureId; 
+        
+    private String idFieldName;
     
-    //@JsonProperty("dataproduct_id")
-    String dataproductId;
-    
-    String display;
+    private boolean idFieldType = false;
     
     List<Integer> bbox;
 
-    public String getFeatureId() {
+    public BigInteger getFeatureId() {
         return featureId;
     }
 
-    public void setFeatureId(String featureId) {
+    public void setFeatureId(BigInteger featureId) {
         this.featureId = featureId;
     }
-
-    public String getDataproductId() {
-        return dataproductId;
+ 
+    public String getIdFieldName() {
+        return idFieldName;
     }
 
-    public void setDataproductId(String dataproductId) {
-        this.dataproductId = dataproductId;
+    public void setIdFieldName(String idFieldName) {
+        this.idFieldName = idFieldName;
     }
 
-    public String getDisplay() {
-        return display;
+    public boolean isIdFieldType() {
+        return idFieldType;
     }
 
-    public void setDisplay(String display) {
-        this.display = display;
+    public void setIdFieldType(boolean idFieldType) {
+        this.idFieldType = idFieldType;
     }
 
     public List<Integer> getBbox() {
