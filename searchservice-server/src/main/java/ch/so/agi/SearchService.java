@@ -4,7 +4,10 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -49,10 +52,19 @@ public class SearchService {
                         result.setDisplay(rs.getString("display"));
                         result.setType(id[0]);
                         result.setDataproductId(id[1]);
-                        
-                        // TODO sub
-                        
-                        
+                                                
+                        String children = rs.getString("dset_children");
+                        if (children != null) {
+                            List<Map> childrenList = objectMapper.readValue(children, ArrayList.class);
+                            for (Map child : childrenList) {
+                                DataproductResult childResult = new DataproductResult();
+                                childResult.setDataproductId((String)child.get("ident"));
+                                childResult.setDisplay((String)child.get("display"));
+                                childResult.setDestInfo((Boolean)child.get("dset_info"));
+                                childResult.setType((String)child.get("subclass"));
+                                result.addSubLayer(childResult);
+                            }
+                        }
                         return result;
                     } else {
                         FeatureResult result = new FeatureResult();

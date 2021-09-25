@@ -1,27 +1,14 @@
 package ch.so.agi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataproductResult extends SearchResult {
-//    private String dataproductId;
-//    private String display;
     private boolean destInfo;
     private String stacktype;
-    private String type;
+    private String type;    
     private List<DataproductResult> sublayers;
     
-//    public String getDataproductId() {
-//        return dataproductId;
-//    }
-//    public void setDataproductId(String dataproductId) {
-//        this.dataproductId = dataproductId;
-//    }
-//    public String getDisplay() {
-//        return display;
-//    }
-//    public void setDisplay(String display) {
-//        this.display = display;
-//    }
     public boolean isDestInfo() {
         return destInfo;
     }
@@ -45,5 +32,11 @@ public class DataproductResult extends SearchResult {
     }
     public void setSublayers(List<DataproductResult> sublayers) {
         this.sublayers = sublayers;
+    }
+    public void addSubLayer(DataproductResult sublayer) {
+        if (getSublayers() == null) {
+            sublayers = new ArrayList<>();
+        }
+        getSublayers().add(sublayer);
     }
 }
