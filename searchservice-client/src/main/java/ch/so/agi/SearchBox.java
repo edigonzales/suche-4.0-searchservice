@@ -89,7 +89,7 @@ public class SearchBox implements IsElement<HTMLElement> {
                     searchString = searchString.substring(0, searchString.length() - 1);
                 }
                 
-                console.log(searchString);
+                //console.log(searchString);
                 
                 DomGlobal.fetch(searchString)
                 .then(response -> {
@@ -104,8 +104,8 @@ public class SearchBox implements IsElement<HTMLElement> {
                     JsArray<String> results = Js.cast(Global.JSON.parse(json));
                     for (int i=0; i<results.length; i++) {
                         console.log(results.getAt(i));
-                        SuggestItem<String> suggestItem = SuggestItem.create(results.getAt(i), results.getAt(i), Icons.ALL.layers_mdi());
-                        suggestItems.add(suggestItem);
+//                        SuggestItem<String> suggestItem = SuggestItem.create(results.getAt(i), results.getAt(i), Icons.ALL.layers_mdi());
+//                        suggestItems.add(suggestItem);
                     }
                     suggestionsHandler.onSuggestionsReady(suggestItems);
 

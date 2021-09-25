@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,27 @@ public class SearchService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public List<SearchResult> search(String queryString) {
+    public List<SearchResult> search(String queryString, String filterString) {
         log.info(queryString);
+        log.info(filterString);
         
-        String stmt = "SELECT t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta FROM suche.solr_views LIMIT 10";
+        Stream<String> stream = Arrays.stream(filterString.split( "," ));      
+        String facets = stream.map(filter -> {
+            return "'"+filter+"'";
+        }).collect(Collectors.joining(","));
+        
+//        String facets = String.join(",", facetsList);
+        log.info(facets);
+        
+        String stmt = ""
+                + "SELECT "
+                + "t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
+                + "FROM "
+                + "suche.solr_views "
+                + "WHERE facet IN (" + facets + ") "
+                + "LIMIT 20";
+        
+        log.info(stmt);
         
         List<SearchResult> foo = jdbcTemplate.query(stmt, new RowMapper<SearchResult>() {
             @Override
