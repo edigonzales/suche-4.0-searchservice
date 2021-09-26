@@ -6,7 +6,7 @@ import java.util.List;
 public class SearchResult implements Serializable {
     private String display;
     private String dataproductId;
-    private int featureId;
+    private String featureId;
     private String idFieldName;
     private String egrid;
     private List<Double> bbox;
@@ -43,11 +43,11 @@ public class SearchResult implements Serializable {
         this.dataproductId = dataproductId;
     }
 
-    public int getFeatureId() {
+    public String getFeatureId() {
         return featureId;
     }
 
-    public void setFeatureId(int featureId) {
+    public void setFeatureId(String featureId) {
         this.featureId = featureId;
     }
 

@@ -47,6 +47,26 @@ public class SearchService {
 //        String facets = String.join(",", facetsList);
         log.info(facets);
         
+        String stmtv2 = ""
+                + "SELECT "
+                + "t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
+                + "FROM "
+                + "suche.solr_views "
+                + "WHERE facet IN (" + facets + ") ";
+        
+        String[] queryTokens = queryString.split(" ");
+        log.info(queryTokens[0]);
+        for (String token : queryTokens) {
+            String whereStr = " AND search_1_stem ILIKE '%"+token+"%'";
+            stmtv2 += whereStr;
+        }
+        stmtv2 += " LIMIT 50";
+        
+        
+        
+        log.info(stmtv2);
+
+        
         String stmt = ""
                 + "SELECT "
                 + "t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
@@ -55,9 +75,8 @@ public class SearchService {
                 + "WHERE facet IN (" + facets + ") "
                 + "LIMIT 20";
         
-        log.info(stmt);
         
-        List<SearchResult> foo = jdbcTemplate.query(stmt, new RowMapper<SearchResult>() {
+        List<SearchResult> foo = jdbcTemplate.query(stmtv2, new RowMapper<SearchResult>() {
             @Override
             public SearchResult mapRow(ResultSet rs, int rowNum) throws SQLException {
                 try {
@@ -87,7 +106,7 @@ public class SearchService {
                     } else {
                         FeatureResult result = new FeatureResult();
                         result.setDataproductId(id[0]);
-                        result.setFeatureId(new BigInteger(id[1]));
+                        result.setFeatureId(id[1]);
                         result.setDisplay(rs.getString("display"));
                         String bbox = rs.getString("bbox");
                         List<Integer> coords = Arrays.stream(bbox.substring(1, bbox.length() - 1).split(","))

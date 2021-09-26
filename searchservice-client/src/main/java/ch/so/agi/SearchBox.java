@@ -18,7 +18,9 @@ import org.dominokit.domino.ui.forms.CheckBox;
 import org.dominokit.domino.ui.grid.Row;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.forms.AbstractSuggestBox.DropDownPositionDown;
+import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
+import org.dominokit.domino.ui.icons.MdiIcon;
 import org.dominokit.domino.ui.style.Color;
 import org.dominokit.domino.ui.utils.HasSelectionHandler.SelectionHandler;
 import org.jboss.elemento.IsElement;
@@ -32,6 +34,7 @@ import elemental2.dom.EventListener;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLInputElement;
 import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 import com.google.gwt.core.client.GWT;
 
@@ -99,14 +102,71 @@ public class SearchBox implements IsElement<HTMLElement> {
                     return response.text();
                 })
                 .then(json -> {
-                    console.log(json);
-                    List<SuggestItem<String>> suggestItems = new ArrayList<SuggestItem<String>>();
+//                    console.log(json);
+                    List<SuggestItem<SearchResult>> featureResults = new ArrayList<SuggestItem<SearchResult>>();
+                    List<SuggestItem<SearchResult>> dataproductResults = new ArrayList<SuggestItem<SearchResult>>();                    
+                    List<SuggestItem<SearchResult>> suggestItems = new ArrayList<>();
                     JsArray<String> results = Js.cast(Global.JSON.parse(json));
                     for (int i=0; i<results.length; i++) {
-                        console.log(results.getAt(i));
-//                        SuggestItem<String> suggestItem = SuggestItem.create(results.getAt(i), results.getAt(i), Icons.ALL.layers_mdi());
-//                        suggestItems.add(suggestItem);
+                        //console.log(results.getAt(i));
+                        JsPropertyMap<?> resultObj = Js.cast(results.getAt(i));
+                        console.log(resultObj);
+                        if (resultObj.has("featureId")) {
+                            String display = Js.asString(resultObj.get("display"));
+                            String dataproductId = Js.asString(resultObj.get("dataproductId"));
+                            String idFieldName = Js.asString(resultObj.get("idFieldName"));
+                            // TODO BigInt problem?
+                            // int featureId = Js.asInt(feature.get("featureId"));
+                            String featureId = Js.asString(resultObj.get("featureId"));
+                            List<Double> bbox = ((JsArray) resultObj.get("bbox")).asList();
+
+                            SearchResult searchResult = new SearchResult();
+                            searchResult.setLabel(display);
+                            searchResult.setDataproductId(dataproductId);
+                            searchResult.setIdFieldName(idFieldName);
+                            searchResult.setFeatureId(featureId);
+                            searchResult.setBbox(bbox);
+                            searchResult.setType("feature");
+
+                            Icon icon;
+                            if (dataproductId.contains("gebaeudeadressen")) {
+                                icon = Icons.ALL.mail();
+                            } else if (dataproductId.contains("grundstueck")) {
+                                icon = Icons.ALL.home();
+                            } else if (dataproductId.contains("flurname")) {
+                                icon = Icons.ALL.terrain();
+                            } else {
+                                icon = Icons.ALL.place();
+                            }
+
+                            SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult,
+                                    searchResult.getLabel(), icon);
+                            featureResults.add(suggestItem);
+                            // suggestItems.add(suggestItem);
+                        } else if (resultObj.has("dataproductId")) {
+                            String display = Js.asString(resultObj.get("display"));
+                            String dataproductId = Js.asString(resultObj.get("dataproductId"));
+                        
+                            SearchResult searchResult = new SearchResult();
+                            searchResult.setLabel(display);
+                            searchResult.setDataproductId(dataproductId);
+                            searchResult.setType("dataproduct");
+                        
+                            MdiIcon icon;
+                            if (resultObj.has("sublayers")) {
+                                icon = Icons.ALL.layers_plus_mdi();  
+                            } else {
+                                icon = Icons.ALL.layers_mdi();
+                            } 
+                        
+                            SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult, searchResult.getLabel(), icon);                            
+                            dataproductResults.add(suggestItem);
+//                          suggestItems.add(suggestItem);
+                        }
                     }
+                    console.log(dataproductResults.size());
+                    suggestItems.addAll(featureResults);
+                    suggestItems.addAll(dataproductResults);
                     suggestionsHandler.onSuggestionsReady(suggestItems);
 
                     
@@ -201,12 +261,12 @@ public class SearchBox implements IsElement<HTMLElement> {
                     return;
                 }
                 HTMLInputElement el =(HTMLInputElement) suggestBox.getInputElement().element();
-//                SearchResult searchResult = (SearchResult) searchValue;
-//                SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult, el.value);
-//                handler.accept(suggestItem);
-                String searchResult = (String) searchValue;
-                SuggestItem<String> suggestItem = SuggestItem.create(searchResult, el.value);
+                SearchResult searchResult = (SearchResult) searchValue;
+                SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult, el.value);
                 handler.accept(suggestItem);
+//                String searchResult = (String) searchValue;
+//                SuggestItem<String> suggestItem = SuggestItem.create(searchResult, el.value);
+//                handler.accept(suggestItem);
             }
         };
 
@@ -242,8 +302,8 @@ public class SearchBox implements IsElement<HTMLElement> {
             @Override
             public void onSelection(Object value) {
                 
-                SuggestItem<String> item = (SuggestItem<String>) value;
-                String result = (String) item.getValue();
+                SuggestItem<SearchResult> item = (SuggestItem<SearchResult>) value;
+                SearchResult result = (SearchResult) item.getValue();
                 console.log(result);
                 
             }

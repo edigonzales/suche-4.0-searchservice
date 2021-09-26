@@ -1,12 +1,9 @@
 package ch.so.agi;
 
-import java.math.BigInteger;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class FeatureResult extends SearchResult {
-    private BigInteger featureId; 
+    private String featureId; 
         
     private String idFieldName;
     
@@ -14,11 +11,11 @@ public class FeatureResult extends SearchResult {
     
     List<Integer> bbox;
 
-    public BigInteger getFeatureId() {
+    public String getFeatureId() {
         return featureId;
     }
 
-    public void setFeatureId(BigInteger featureId) {
+    public void setFeatureId(String featureId) {
         this.featureId = featureId;
     }
  
