@@ -51,4 +51,4 @@ java -jar sodata-server/target/sodata.jar --spring.profiles.active=XXXX
 
 
 ## Todo
-- Mehrere Tabellen? Ortssuche, Layersuche und Featuresuche. Bei der Ortssuche ist wohl praktisch immer trigram entscheidend. Bei beiden anderen kann es beides sein. Bei exakten ID eher "stem" oder dann noch zusätzlich normaler Index (oder kommt das auf selbe raus?)
+- Mehrere Tabellen? Ortssuche, Layersuche und Featuresuche. Bei der Ortssuche ist wohl praktisch immer trigram entscheidend. Bei beiden anderen kann es beides sein. Bei exakten ID eher "stem" oder dann noch zusätzlich normaler Index (oder kommt das auf selbe raus?). Vorteil könnte sein, dass man so besser balancieren kann, z.B. je 50 requesten und falls Orte nur 20 liefert, werden dann (falls vorhanden) 30 Karten verwendet.
