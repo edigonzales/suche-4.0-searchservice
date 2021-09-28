@@ -52,3 +52,42 @@ java -jar sodata-server/target/sodata.jar --spring.profiles.active=XXXX
 
 ## Todo
 - Mehrere Tabellen? Ortssuche, Layersuche und Featuresuche. Bei der Ortssuche ist wohl praktisch immer trigram entscheidend. Bei beiden anderen kann es beides sein. Bei exakten ID eher "stem" oder dann noch zusätzlich normaler Index (oder kommt das auf selbe raus?). Vorteil könnte sein, dass man so besser balancieren kann, z.B. je 50 requesten und falls Orte nur 20 liefert, werden dann (falls vorhanden) 30 Karten verwendet.
+
+```
+SELECT
+* 
+FROM 
+(
+    SELECT 'A' AS weight, *
+    FROM suche.solr_views 
+    --WHERE facet IN ('ch.so.agi.av.gebaeudeadressen.gebaeudeeingaenge')  
+    WHERE facet IN ('foreground')  
+    AND search_1_stem ILIKE '%wasser%'
+    --AND search_1_stem ILIKE '%rötis%'
+    --AND search_1_stem ILIKE '%4%'
+    
+    UNION ALL
+    
+    SELECT 'B' AS weight, *
+    FROM suche.solr_views 
+    --WHERE facet IN ('ch.so.agi.av.gebaeudeadressen.gebaeudeeingaenge')  
+    WHERE facet IN ('foreground')  
+    AND search_2_stem ILIKE '%wasser%'
+    --AND search_2_stem ILIKE '%rötis%'
+    --AND search_2_stem ILIKE '%4%'
+    
+    UNION ALL
+    
+    SELECT 'C' AS weigth, *
+    FROM suche.solr_views 
+    --WHERE facet IN ('ch.so.agi.av.gebaeudeadressen.gebaeudeeingaenge')  
+    WHERE facet IN ('foreground')  
+    AND search_3_stem ILIKE '%wasser'
+    --AND search_3_stem ILIKE '%rötis%'
+    --AND search_3_stem ILIKE '%4%'
+    
+) AS foo
+ORDER BY weight
+    LIMIT  50
+
+```
