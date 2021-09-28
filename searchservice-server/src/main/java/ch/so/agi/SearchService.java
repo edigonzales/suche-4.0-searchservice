@@ -53,18 +53,19 @@ public class SearchService {
                 + "FROM "
                 + "suche.solr_views "
                 + "WHERE facet IN (" + facets + ") ";
+                
+        String trigramFilter = "(search_1_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_1_stem ILIKE '%") + "%')";
+        trigramFilter += " OR ";
+        trigramFilter += "(search_2_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_2_stem ILIKE '%") + "%')";
+        trigramFilter += " OR ";
+        trigramFilter += "(search_3_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_3_stem ILIKE '%") + "%')";
+        stmtv2 += " AND " + trigramFilter + " LIMIT 50";
         
-        String[] queryTokens = queryString.split(" ");
-        log.info(queryTokens[0]);
-        for (String token : queryTokens) {
-            String whereStr = " AND search_1_stem ILIKE '%"+token+"%'";
-            stmtv2 += whereStr;
-        }
-        stmtv2 += " LIMIT 50";
+        // TODO stem suche
+        log.info(trigramFilter);
         
         
-        
-        log.info(stmtv2);
+//        log.info(stmtv2);
 
         
         String stmt = ""
