@@ -5,9 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import sun.util.resources.cldr.ext.TimeZoneNames_dsb;
 
 @Service
 public class SearchService {
@@ -47,40 +52,74 @@ public class SearchService {
 //        String facets = String.join(",", facetsList);
         log.info(facets);
         
-        String stmtv2 = ""
-                + "SELECT "
-                + "t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
-                + "FROM "
-                + "suche.solr_views "
-                + "WHERE facet IN (" + facets + ") ";
+        String stmt = "\n"
+                + "(SELECT\n"
+                + "'A' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta\n"
+                + "FROM\n"
+                + "suche.solr_views\n"
+                + "WHERE facet IN (" + facets + ")\n"
+                + "AND (search_1_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_1_stem ILIKE '%") + "%')\n"
+                + "LIMIT 50)\n"; 
                 
-        String trigramFilter = "(search_1_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_1_stem ILIKE '%") + "%')";
+        stmt += "UNION ALL\n";
+        
+        stmt += ""
+                + "(SELECT\n"
+                + "'B' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta\n"
+                + "FROM\n"
+                + "suche.solr_views\n"
+                + "WHERE facet IN (" + facets + ")\n"
+                + "AND (search_2_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_2_stem ILIKE '%") + "%')\n"
+                + "LIMIT 50)\n";
+        
+        stmt += "UNION ALL\n";
+        
+        stmt += ""
+                + "(SELECT\n"
+                + "'C' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
+                + "FROM\n"
+                + "suche.solr_views\n"
+                + "WHERE facet IN (" + facets + ")\n"
+                + "AND (search_3_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_3_stem ILIKE '%") + "%')\n"
+                + "LIMIT 50)\n";
+       
+
+       
+        
+        
+        String trigramFilter = "";
         trigramFilter += " OR ";
         trigramFilter += "(search_2_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_2_stem ILIKE '%") + "%')";
         trigramFilter += " OR ";
         trigramFilter += "(search_3_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_3_stem ILIKE '%") + "%')";
-        stmtv2 += " AND " + trigramFilter + " LIMIT 50";
+        //stmt += " AND " + trigramFilter + " LIMIT 50";
         
         // TODO stem suche
-        log.info(trigramFilter);
+        log.info(stmt);
         
         
 //        log.info(stmtv2);
 
         
-        String stmt = ""
-                + "SELECT "
-                + "t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
-                + "FROM "
-                + "suche.solr_views "
-                + "WHERE facet IN (" + facets + ") "
-                + "LIMIT 20";
+//        String stmt = ""
+//                + "SELECT "
+//                + "t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
+//                + "FROM "
+//                + "suche.solr_views "
+//                + "WHERE facet IN (" + facets + ") "
+//                + "LIMIT 20";
         
-        
-        List<SearchResult> foo = jdbcTemplate.query(stmtv2, new RowMapper<SearchResult>() {
+        Set<String> tids = new HashSet<>();
+        List<SearchResult> foo = jdbcTemplate.query(stmt, new RowMapper<SearchResult>() {
             @Override
             public SearchResult mapRow(ResultSet rs, int rowNum) throws SQLException {
                 try {
+                    String t_id = rs.getString("t_id");
+                    if (tids.contains(t_id)) {
+                        return null;
+                    }
+                    tids.add(t_id);
+                    
                     String[] id = objectMapper.readValue(rs.getString("id"), String[].class);
                     String facet = rs.getString("facet");
                     
@@ -142,6 +181,7 @@ public class SearchService {
             
         });
         
+        foo.removeAll(Collections.singletonList(null)); // TODO: im RowMapper? 
         return foo;
     }
 }
