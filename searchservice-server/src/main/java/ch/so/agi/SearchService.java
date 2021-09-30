@@ -25,8 +25,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sun.util.resources.cldr.ext.TimeZoneNames_dsb;
-
 @Service
 public class SearchService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());

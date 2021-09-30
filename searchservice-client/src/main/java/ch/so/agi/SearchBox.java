@@ -4,11 +4,14 @@ import static elemental2.dom.DomGlobal.console;
 import static org.jboss.elemento.Elements.body;
 import static org.jboss.elemento.Elements.div;
 import static org.jboss.elemento.Elements.img;
+import static org.dominokit.domino.ui.style.Unit.px;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.dominokit.domino.ui.button.Button;
+import org.dominokit.domino.ui.button.ButtonSize;
 import org.dominokit.domino.ui.dropdown.DropDownMenu;
 import org.dominokit.domino.ui.forms.SuggestBox;
 import org.dominokit.domino.ui.forms.SuggestBoxStore;
@@ -324,6 +327,24 @@ public class SearchBox implements IsElement<HTMLElement> {
                 .addColumn(Column.span(4).appendChild(cbVollzugsmeldung))
                 .addColumn(Column.span(4).appendChild(cbMutation));
         root.appendChild(facetRow2.element());
+        
+        Button resetBtn = Button.create(Icons.ALL.layers_remove_mdi())
+                .setSize(ButtonSize.SMALL)
+                .setContent("Reset")
+                .setBackground(Color.WHITE)
+                .elevate(0)
+                .style()
+                .setColor("#c62828")
+                .setBorder("1px #c62828 solid")
+                .setMinWidth(px.of(100)).get();
+
+        Row resetRow = Row.create().style().setPaddingLeft("10px").setPaddingTop("10px").get().appendChild(resetBtn);
+        root.appendChild(resetRow.element());
+        
+        resetRow.addClickListener(evt -> {
+            console.log("remove all layers");
+        });
+
     }
     
     @Override
