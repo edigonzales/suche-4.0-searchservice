@@ -38,14 +38,27 @@ import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLInputElement;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
+import ol.layer.Base;
+import ol.layer.Image;
+import ol.Coordinate;
+import ol.Extent;
+import ol.OLFactory;
+import ol.View;
+import ol.layer.LayerOptions;
+import ol.source.ImageWms;
+import ol.source.ImageWmsOptions;
+import ol.source.ImageWmsParams;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dev.javac.testing.Source;
 
 public class SearchBox implements IsElement<HTMLElement> {
 
     private final HTMLElement root;
     private ol.Map map;
     private SuggestBox suggestBox;
+    private List<String> wmsLayers = new ArrayList<>();
+    private String ID_ATTR_NAME = "id";
     
     CheckBox cbBienen = CheckBox.create("Bienen").setColor(Color.RED_DARKEN_3);
     CheckBox cbQuellen = CheckBox.create("Quellen").setColor(Color.RED_DARKEN_3);
@@ -307,10 +320,23 @@ public class SearchBox implements IsElement<HTMLElement> {
                 
                 SuggestItem<SearchResult> item = (SuggestItem<SearchResult>) value;
                 SearchResult result = (SearchResult) item.getValue();
-                console.log(result);
-                
+                //console.log(result);
+                if (result.getType().equalsIgnoreCase("dataproduct")) {
+                    String dataproductId = result.getDataproductId();
+                    Image wmsLayer = createWmsLayer(dataproductId);
+                    map.addLayer(wmsLayer);
+                    wmsLayers.add(dataproductId);
+                } else {
+                    List<Double> bbox = result.getBbox();                 
+                    Extent extent = new Extent(bbox.get(0), bbox.get(1), bbox.get(2), bbox.get(3));
+                    View view = map.getView();
+                    double resolution = view.getResolutionForExtent(extent);
+                    view.setZoom(Math.floor(view.getZoomForResolution(resolution)) - 0);
+                    double x = extent.getLowerLeftX() + extent.getWidth() / 2;
+                    double y = extent.getLowerLeftY() + extent.getHeight() / 2;
+                    view.setCenter(new Coordinate(x,y));
+                } 
             }
-  
         });
         
         HTMLElement suggestBoxDiv = div().id("suggestBoxDiv").add(suggestBox).element();
@@ -341,8 +367,9 @@ public class SearchBox implements IsElement<HTMLElement> {
         Row resetRow = Row.create().style().setPaddingLeft("10px").setPaddingTop("10px").get().appendChild(resetBtn);
         root.appendChild(resetRow.element());
         
+
         resetRow.addClickListener(evt -> {
-            console.log("remove all layers");
+            removeWmsLayers();
         });
 
     }
@@ -351,4 +378,58 @@ public class SearchBox implements IsElement<HTMLElement> {
     public HTMLElement element() {
         return root;
     }
+    
+    private void removeWmsLayers() {
+        for (String layerId : wmsLayers) {
+            Image rlayer = (Image) getMapLayerById(layerId);
+            map.removeLayer(rlayer);
+        }
+        wmsLayers.clear();
+    }
+    
+    private Image createWmsLayer(String layerName) {
+        ImageWmsParams imageWMSParams = OLFactory.createOptions();
+        imageWMSParams.setLayers(layerName);
+
+        ImageWmsOptions imageWMSOptions = OLFactory.createOptions();
+
+        String baseUrl = "https://geo.so.ch/api/wms?";
+
+        imageWMSOptions.setUrl(baseUrl);
+        imageWMSOptions.setParams(imageWMSParams);
+        imageWMSOptions.setRatio(1.2f);
+
+        ImageWms imageWMSSource = new ImageWms(imageWMSOptions);
+
+        LayerOptions layerOptions = OLFactory.createOptions();
+        layerOptions.setSource(imageWMSSource);
+
+        Image wmsLayer = new Image(layerOptions);
+        wmsLayer.set(ID_ATTR_NAME, layerName);
+        wmsLayer.setVisible(true);
+        //wmsLayer.setOpacity(referenceWms.getLayerOpacity());
+ 
+        return wmsLayer;
+    }
+ 
+    private Base getMapLayerById(String id) {
+        ol.Collection<Base> layers = map.getLayers();
+        for (int i = 0; i < layers.getLength(); i++) {
+            Base item = layers.item(i);
+            try {
+                String layerId = item.get(ID_ATTR_NAME);
+                if (layerId == null) {
+                    continue;
+                }
+                if (layerId.equalsIgnoreCase(id)) {
+                    return item;
+                }
+            } catch (Exception e) {
+                //console.log(e.getMessage());
+                //console.log("should not reach here");
+            }
+        }
+        return null;
+    }
+
 }
