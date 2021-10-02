@@ -52,7 +52,7 @@ public class App implements EntryPoint {
         Projection.addProjection(projection);
         
         // Change Domino UI color scheme.
-        Theme theme = new Theme(ColorScheme.WHITE);
+        Theme theme = new Theme(ColorScheme.RED);
         theme.apply();
 
         // Add the Openlayers map (element) to the body.

@@ -58,6 +58,16 @@ body, div {
     max-height: calc(100vh - 12em) !important;
 }
 
+.dropdown-menu>li>a {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
+.dropdown-menu>li>a>span>strong {
+    font-weight: 300 !important;
+
+}
+
 #logoDiv {
     padding: 10px;
 }
@@ -68,4 +78,9 @@ body, div {
 
 #suggestBoxDiv {
     padding: 10px;
+}
+
+.suggestion-group {
+    font-weight: 700;
+    color: #c62828;
 }

@@ -4,11 +4,13 @@ import static elemental2.dom.DomGlobal.console;
 import static org.jboss.elemento.Elements.body;
 import static org.jboss.elemento.Elements.div;
 import static org.jboss.elemento.Elements.img;
+import static org.jboss.elemento.Elements.span;
 import static org.dominokit.domino.ui.style.Unit.px;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.button.ButtonSize;
@@ -19,6 +21,7 @@ import org.dominokit.domino.ui.forms.SuggestBoxStore.SuggestionsHandler;
 import org.dominokit.domino.ui.forms.SuggestItem;
 import org.dominokit.domino.ui.forms.CheckBox;
 import org.dominokit.domino.ui.grid.Row;
+import org.dominokit.domino.ui.grid.Column.Span;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.forms.AbstractSuggestBox.DropDownPositionDown;
 import org.dominokit.domino.ui.icons.Icon;
@@ -58,7 +61,9 @@ public class SearchBox implements IsElement<HTMLElement> {
     private ol.Map map;
     private SuggestBox suggestBox;
     private List<String> wmsLayers = new ArrayList<>();
+    
     private String ID_ATTR_NAME = "id";
+    private int MAX_SEARCH_RESULTS = 15;
     
     CheckBox cbBienen = CheckBox.create("Bienen").setColor(Color.RED_DARKEN_3);
     CheckBox cbQuellen = CheckBox.create("Quellen").setColor(Color.RED_DARKEN_3);
@@ -180,90 +185,23 @@ public class SearchBox implements IsElement<HTMLElement> {
 //                          suggestItems.add(suggestItem);
                         }
                     }
-                    console.log(dataproductResults.size());
-                    suggestItems.addAll(featureResults);
-                    suggestItems.addAll(dataproductResults);
+                    
+                    SearchResult featureHeader = new SearchResult();
+                    featureHeader.setLabel("<span class='suggestion-group'>Orte</span>");
+                    SuggestItem<SearchResult> featureHeaderItem = SuggestItem.create(featureHeader, featureHeader.getLabel(), null);                            
+                    suggestItems.add(featureHeaderItem);
+                    List<SuggestItem<SearchResult>> limitedFeatureResults = featureResults.stream().limit(MAX_SEARCH_RESULTS).collect(Collectors.toList());
+                    suggestItems.addAll(limitedFeatureResults);
+                    
+                    SearchResult dataproductHeader = new SearchResult();
+                    dataproductHeader.setLabel("<span class='suggestion-group'>Karten</span>");
+                    SuggestItem<SearchResult> dataproductHeaderItem = SuggestItem.create(dataproductHeader, dataproductHeader.getLabel(), null);
+                    suggestItems.add(dataproductHeaderItem);
+                    List<SuggestItem<SearchResult>> limitedDataproductResults = dataproductResults.stream().limit(MAX_SEARCH_RESULTS).collect(Collectors.toList());
+                    suggestItems.addAll(limitedDataproductResults);
+                    
                     suggestionsHandler.onSuggestionsReady(suggestItems);
 
-                    
-//                    List<SuggestItem<SearchResult>> featureResults = new ArrayList<SuggestItem<SearchResult>>();
-//                    List<SuggestItem<SearchResult>> dataproductResults = new ArrayList<SuggestItem<SearchResult>>();
-//
-//                    List<SuggestItem<SearchResult>> suggestItems = new ArrayList<>();
-//                    JsPropertyMap<?> parsed = Js.cast(Global.JSON.parse(json));
-//                    JsArray<?> results = Js.cast(parsed.get("results"));
-//                    for (int i = 0; i < results.length; i++) {
-//                        JsPropertyMap<?> resultObj = Js.cast(results.getAt(i));
-//                            
-//                        // TODO sort by feature (sub-feature) and dataproduct
-//                        // ah, durchmischt sind feature und dataproduct nie?
-//                        
-//                        // Grouping? https://github.com/DominoKit/domino-ui/blob/master/domino-ui/src/main/java/org/dominokit/domino/ui/forms/SelectOptionGroup.java#L25
-//                        
-//                        
-//                        
-//                        if (resultObj.has("feature")) {
-//                            JsPropertyMap feature = (JsPropertyMap) resultObj.get("feature");
-//                            String display = ((JsString) feature.get("display")).normalize();
-//                            String dataproductId = ((JsString) feature.get("dataproduct_id")).normalize();
-//                            String idFieldName = ((JsString) feature.get("id_field_name")).normalize();
-//                            int featureId = new Double(((JsNumber) feature.get("feature_id")).valueOf()).intValue();
-//                            List<Double> bbox = ((JsArray) feature.get("bbox")).asList();
-// 
-//                            SearchResult searchResult = new SearchResult();
-//                            searchResult.setLabel(display);
-//                            searchResult.setDataproductId(dataproductId);
-//                            searchResult.setIdFieldName(idFieldName);
-//                            searchResult.setFeatureId(featureId);
-//                            searchResult.setBbox(bbox);
-//                            searchResult.setType("feature");
-//                            
-//                            Icon icon;
-//                            if (dataproductId.contains("gebaeudeadressen")) {
-//                                icon = Icons.ALL.mail();
-//                            } else if (dataproductId.contains("grundstueck")) {
-//                                icon = Icons.ALL.home();
-//                            } else if (dataproductId.contains("flurname"))  {
-//                                icon = Icons.ALL.terrain();
-//                            } else {
-//                                icon = Icons.ALL.place();
-//                            }
-//                            
-//                            SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult, searchResult.getLabel(), icon);
-//                            featureResults.add(suggestItem);
-////                            suggestItems.add(suggestItem);                            
-//                            
-//                        } else if (resultObj.has("dataproduct")) {
-//                            JsPropertyMap dataproduct = (JsPropertyMap) resultObj.get("dataproduct");
-//                            String display = ((JsString) dataproduct.get("display")).normalize();
-//                            String dataproductId = ((JsString) dataproduct.get("dataproduct_id")).normalize();
-//
-//                            SearchResult searchResult = new SearchResult();
-//                            searchResult.setLabel(display);
-//                            searchResult.setDataproductId(dataproductId);
-//                            searchResult.setType("dataproduct");
-//
-//                            MdiIcon icon;
-//                            if (dataproduct.has("sublayers")) {
-//                                icon = Icons.ALL.layers_plus_mdi();  
-//                            } else {
-//                                icon = Icons.ALL.layers_mdi();
-//                            } 
-//                            
-//                            SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult, searchResult.getLabel(), icon);                            
-//                            dataproductResults.add(suggestItem);
-////                            suggestItems.add(suggestItem);
-//                        }
-//                    }
-//                    SearchResult featureGroup = new SearchResult();
-//                    featureGroup.setLabel("<b>Orte</b>");
-//                    SuggestItem<SearchResult> featureGroupItem = SuggestItem.create(featureGroup, featureGroup.getLabel(), null);                            
-//                    suggestItems.add(featureGroupItem);
-                    
-//                    suggestItems.addAll(featureResults);
-//                    suggestItems.addAll(dataproductResults);
-//
-//                    suggestionsHandler.onSuggestionsReady(suggestItems);
                     return null;
                 }).catch_(error -> {
                     console.log(error);
@@ -366,12 +304,10 @@ public class SearchBox implements IsElement<HTMLElement> {
 
         Row resetRow = Row.create().style().setPaddingLeft("10px").setPaddingTop("10px").get().appendChild(resetBtn);
         root.appendChild(resetRow.element());
-        
 
         resetRow.addClickListener(evt -> {
             removeWmsLayers();
         });
-
     }
     
     @Override

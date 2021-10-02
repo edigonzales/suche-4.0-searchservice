@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Comparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,29 +158,16 @@ public class SearchService {
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                     throw new RuntimeException(e);
-                }
-
-                                
-                
-//                String display = rs.getString("display");
-//                //String facet = rs.getString("facet");
-//                String bbox = rs.getString("bbox");                
-//                List<Integer> coords = Arrays.stream(bbox.substring(1, bbox.length()-1).split(","))
-//                        .map(Integer::parseInt)
-//                        .collect(Collectors.toList());
-//                
-//                FeatureResult featureResult = new FeatureResult();
-//                featureResult.setDisplay(display);
-//                featureResult.setDataproductId(facet);
-//                featureResult.setBbox(coords);
-                
-                
-//                return featureResult;
+                }                                
             }
             
         });
         
         foo.removeAll(Collections.singletonList(null)); // TODO: im RowMapper? 
+//        List<SearchResult> sortedList = foo.stream()
+//                .sorted(Comparator.comparing(SearchResult::getDataproductId))
+//                .collect(Collectors.toList());
+//        return sortedList;
         return foo;
     }
 }
