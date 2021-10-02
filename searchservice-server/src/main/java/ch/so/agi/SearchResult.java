@@ -9,6 +9,8 @@ public abstract class SearchResult {
     private String dataproductId;
     
     private String display;
+    
+    private String weight;
 
     public String getDataproductId() {
         return dataproductId;
@@ -24,5 +26,13 @@ public abstract class SearchResult {
 
     public void setDisplay(String display) {
         this.display = display;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 }

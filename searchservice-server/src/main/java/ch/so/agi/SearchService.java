@@ -39,21 +39,46 @@ public class SearchService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public List<SearchResult> search(String queryString, String filterString) {
+    public List<SearchResult> search(String queryString, String filterString, String additionalFilterString) {
         log.info(queryString);
         log.info(filterString);
+        log.info(additionalFilterString);
         
-        Stream<String> stream = Arrays.stream(filterString.split( "," ));      
+        //String facets = "foreground,ch.so.agi.av.bodenbedeckung,ch.so.agi.av.gebaeudeadressen.gebaeudeeingaenge,ch.so.agi.av.grundstuecke.rechtskraeftig,ch.so.agi.av.nomenklatur.flurnamen,ch.so.alw.bienenstandorte_und_sperrgebiete.bienenstandorte";;
+        
+        Stream<String> stream = Arrays.stream((filterString + "," + additionalFilterString).split( "," ));      
         String facets = stream.map(filter -> {
             return "'"+filter+"'";
         }).collect(Collectors.joining(","));
         
-//        String facets = String.join(",", facetsList);
         log.info(facets);
+        
+//        String additionalFacets = null;
+//        if (additionalFilterString != null) {
+//            stream = Arrays.stream(additionalFilterString.split( "," ));
+//            additionalFacets = stream.map(filter -> {
+//                return "'"+filter+"'";
+//            }).collect(Collectors.joining(","));
+//        }
+        
+//        log.info("additionalFacets: " + additionalFacets);
+        
+//        String gaga = "\n"
+//                + "(SELECT\n"
+//                + "'A' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta\n"
+//                + "FROM\n"
+//                + "suche.solr_views\n"
+//                + "WHERE facet IN (" + additionalFacets + ")\n"
+//                + "AND search_ts @@ to_tsquery('german', "
+//                + "AND (search_1_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_1_stem ILIKE '%") + "%')\n"
+//                + "LIMIT 50)\n"; 
+  
+        
+
         
         String stmt = "\n"
                 + "(SELECT\n"
-                + "'A' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta\n"
+                + "'B' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta\n"
                 + "FROM\n"
                 + "suche.solr_views\n"
                 + "WHERE facet IN (" + facets + ")\n"
@@ -64,7 +89,7 @@ public class SearchService {
         
         stmt += ""
                 + "(SELECT\n"
-                + "'B' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta\n"
+                + "'C' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta\n"
                 + "FROM\n"
                 + "suche.solr_views\n"
                 + "WHERE facet IN (" + facets + ")\n"
@@ -75,7 +100,7 @@ public class SearchService {
         
         stmt += ""
                 + "(SELECT\n"
-                + "'C' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
+                + "'D' AS weight, CAST(t_id AS TEXT) AS t_id, id, display, dset_children, dset_info, facet, bbox, idfield_meta "
                 + "FROM\n"
                 + "suche.solr_views\n"
                 + "WHERE facet IN (" + facets + ")\n"
@@ -115,6 +140,7 @@ public class SearchService {
                     }
                     tids.add(t_id);
                     
+                    String weight = rs.getString("weight");
                     String[] id = objectMapper.readValue(rs.getString("id"), String[].class);
                     String facet = rs.getString("facet");
                     
@@ -124,6 +150,7 @@ public class SearchService {
                         result.setDisplay(rs.getString("display"));
                         result.setType(id[0]);
                         result.setDataproductId(id[1]);
+                        result.setWeight(weight);
                                                 
                         String children = rs.getString("dset_children");
                         if (children != null) {
@@ -149,6 +176,13 @@ public class SearchService {
                         result.setBbox(coords);
                         String[] idFieldMeta = objectMapper.readValue(rs.getString("idfield_meta"), String[].class);
                         result.setIdFieldName(idFieldMeta[0]);
+
+                        if (additionalFilterString != null && additionalFilterString.contains(id[0])) {
+                            result.setWeight("A");
+                        } else {
+                            result.setWeight(weight);
+                        }
+                        
                         return result;
                     }
                 } catch (JsonProcessingException e) {
@@ -159,11 +193,17 @@ public class SearchService {
             
         });
         
+        // TODO: sortieren nach facet-type, falls Feature.
+
         foo.removeAll(Collections.singletonList(null)); // TODO: im RowMapper? 
-//        List<SearchResult> sortedList = foo.stream()
-//                .sorted(Comparator.comparing(SearchResult::getDataproductId))
-//                .collect(Collectors.toList());
-//        return sortedList;
-        return foo;
+
+        if (additionalFilterString != null) {
+            List<SearchResult> sortedList = foo.stream()
+                    .sorted(Comparator.comparing(SearchResult::getWeight))
+                    .collect(Collectors.toList());
+            return sortedList;
+        } else {
+            return foo;
+        }
     }
 }

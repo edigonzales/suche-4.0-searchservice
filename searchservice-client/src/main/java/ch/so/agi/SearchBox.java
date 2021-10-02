@@ -93,27 +93,33 @@ public class SearchBox implements IsElement<HTMLElement> {
 
                 String searchString = "search?searchtext="+value.trim().toLowerCase() + "&filter=foreground,ch.so.agi.av.bodenbedeckung,ch.so.agi.av.gebaeudeadressen.gebaeudeeingaenge,ch.so.agi.av.grundstuecke.rechtskraeftig,ch.so.agi.av.nomenklatur.flurnamen";
                 
+                String additionalFilter = "&additional_filter=";
                 if (cbBienen.isChecked()) {
-                    searchString += ",ch.so.alw.bienenstandorte_und_sperrgebiete.bienenstandorte,";
+                    additionalFilter += "ch.so.alw.bienenstandorte_und_sperrgebiete.bienenstandorte,";
                 } 
                 if (cbQuellen.isChecked()) {
-                    searchString += ",ch.so.afu.gewaesserschutz.quellen,";
+                    additionalFilter += "ch.so.afu.gewaesserschutz.quellen,";
                 } 
                 if (cbSondierung.isChecked()) {
-                    searchString += ",ch.so.afu.wasserbewirtschaftung.sondierung,";
+                    additionalFilter += "ch.so.afu.wasserbewirtschaftung.sondierung,";
                 }
                 if (cbVollzugsmeldung.isChecked()) {
-                    searchString += ",ch.so.agi.av.gb2av.controlling_vollzugsmeldungen,";
+                    additionalFilter += "ch.so.agi.av.gb2av.controlling_vollzugsmeldungen,";
                 }
                 if (cbMutation.isChecked()) {
-                    searchString += ",ch.so.agi.av.gb2av.controlling_mutationen,";
+                    additionalFilter += "ch.so.agi.av.gb2av.controlling_mutationen,";
                 } 
                 
-                if (searchString.charAt(searchString.length()-1) == ',') {
-                    searchString = searchString.substring(0, searchString.length() - 1);
+                if (additionalFilter.charAt(additionalFilter.length()-1) == ',') {
+                    additionalFilter = additionalFilter.substring(0, additionalFilter.length() - 1);
                 }
                 
-                //console.log(searchString);
+                if (additionalFilter.length()>19) {
+                    searchString += additionalFilter;
+                }
+                
+                
+//                console.log(searchString);
                 
                 DomGlobal.fetch(searchString)
                 .then(response -> {
