@@ -81,16 +81,12 @@ public class SearchService {
                 + "WHERE facet IN (" + facets + ")\n"
                 + "AND (search_3_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_3_stem ILIKE '%") + "%')\n"
                 + "LIMIT 50)\n";
-       
-
-       
-        
-        
-        String trigramFilter = "";
-        trigramFilter += " OR ";
-        trigramFilter += "(search_2_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_2_stem ILIKE '%") + "%')";
-        trigramFilter += " OR ";
-        trigramFilter += "(search_3_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_3_stem ILIKE '%") + "%')";
+ 
+//        String trigramFilter = "";
+//        trigramFilter += " OR ";
+//        trigramFilter += "(search_2_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_2_stem ILIKE '%") + "%')";
+//        trigramFilter += " OR ";
+//        trigramFilter += "(search_3_stem ILIKE '%" + queryString.trim().replace(" ", "%' AND search_3_stem ILIKE '%") + "%')";
         //stmt += " AND " + trigramFilter + " LIMIT 50";
         
         // TODO stem suche

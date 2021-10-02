@@ -94,19 +94,19 @@ public class SearchBox implements IsElement<HTMLElement> {
                 String searchString = "search?searchtext="+value.trim().toLowerCase() + "&filter=foreground,ch.so.agi.av.bodenbedeckung,ch.so.agi.av.gebaeudeadressen.gebaeudeeingaenge,ch.so.agi.av.grundstuecke.rechtskraeftig,ch.so.agi.av.nomenklatur.flurnamen";
                 
                 if (cbBienen.isChecked()) {
-                    searchString += "ch.so.alw.bienenstandorte_und_sperrgebiete.bienenstandorte,";
+                    searchString += ",ch.so.alw.bienenstandorte_und_sperrgebiete.bienenstandorte,";
                 } 
                 if (cbQuellen.isChecked()) {
-                    searchString += "ch.so.afu.gewaesserschutz.quellen,";
+                    searchString += ",ch.so.afu.gewaesserschutz.quellen,";
                 } 
                 if (cbSondierung.isChecked()) {
-                    searchString += "ch.so.afu.wasserbewirtschaftung.sondierung,";
+                    searchString += ",ch.so.afu.wasserbewirtschaftung.sondierung,";
                 }
                 if (cbVollzugsmeldung.isChecked()) {
-                    searchString += "ch.so.agi.av.gb2av.controlling_vollzugsmeldungen,";
+                    searchString += ",ch.so.agi.av.gb2av.controlling_vollzugsmeldungen,";
                 }
                 if (cbMutation.isChecked()) {
-                    searchString += "ch.so.agi.av.gb2av.controlling_mutationen,";
+                    searchString += ",ch.so.agi.av.gb2av.controlling_mutationen,";
                 } 
                 
                 if (searchString.charAt(searchString.length()-1) == ',') {
@@ -131,7 +131,7 @@ public class SearchBox implements IsElement<HTMLElement> {
                     for (int i=0; i<results.length; i++) {
                         //console.log(results.getAt(i));
                         JsPropertyMap<?> resultObj = Js.cast(results.getAt(i));
-                        console.log(resultObj);
+                        //console.log(resultObj);
                         if (resultObj.has("featureId")) {
                             String display = Js.asString(resultObj.get("display"));
                             String dataproductId = Js.asString(resultObj.get("dataproductId"));
